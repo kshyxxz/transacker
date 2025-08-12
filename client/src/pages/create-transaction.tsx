@@ -63,9 +63,9 @@ export default function CreateTransaction() {
     defaultValues: {
       type: "credit",
       subType: "",
-      amount: 0,
-      rate: 0,
-      quantity: 0,
+      amount: undefined,
+      rate: undefined,
+      quantity: undefined,
       index: 0,
       profit: 0,
     },
@@ -138,9 +138,9 @@ export default function CreateTransaction() {
     form.reset({
       type,
       subType: "",
-      amount: 0,
-      rate: 0,
-      quantity: 0,
+      amount: undefined,
+      rate: undefined,
+      quantity: undefined,
       index: 0,
       profit: 0,
     });
@@ -221,7 +221,8 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Rate</Label>
               <Input
                 type="number"
-                placeholder="Enter rate..."
+                step="0.01"
+                placeholder="0"
                 className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
                 {...form.register("rate", { valueAsNumber: true })}
               />
@@ -231,7 +232,8 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Amount</Label>
               <Input
                 type="number"
-                placeholder="Enter amount..."
+                step="0.01"
+                placeholder="0"
                 className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
                 {...form.register("amount", { valueAsNumber: true })}
               />
@@ -243,7 +245,7 @@ export default function CreateTransaction() {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-pure-white/80">Calculated Profit</span>
                   <span className="text-lg font-semibold text-success">
-                    ₹{calculatedProfit.toLocaleString()}
+                    NPR {calculatedProfit.toLocaleString()}
                   </span>
                 </div>
                 <div className="text-xs text-pure-white/60 mt-1">
@@ -277,7 +279,7 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Quantity</Label>
               <Input
                 type="number"
-                placeholder="Enter quantity..."
+                placeholder="0"
                 className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
                 {...form.register("quantity", { valueAsNumber: true })}
               />
@@ -287,7 +289,8 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Amount</Label>
               <Input
                 type="number"
-                placeholder="Enter amount..."
+                step="0.01"
+                placeholder="0"
                 className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
                 {...form.register("amount", { valueAsNumber: true })}
               />

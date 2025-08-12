@@ -35,7 +35,7 @@ export default function TransactionHistory() {
     .reduce((sum, t) => sum + (t.profit || 0), 0);
 
   const formatAmount = (amount: number) => {
-    return `₹${amount.toLocaleString()}`;
+    return `NPR ${amount.toLocaleString()}`;
   };
 
   const formatDate = (dateString: string) => {
