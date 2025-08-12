@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack transaction management application built with React and Express. The app allows users to record and track financial transactions, specifically designed for credit transactions (like weekly payments and diamond purchases) and debit transactions (like eSewa and bank transfers). It features a modern dark-themed UI with transaction creation, history viewing, and monthly profit tracking capabilities.
+Transacker is a full-stack transaction management application built with React and Express. The app allows users to record and track financial transactions, specifically designed for credit transactions (like weekly payments and diamond purchases) and debit transactions (like eSewa and bank transfers). It features a modern dark-themed UI with transaction creation, history viewing, and monthly profit tracking capabilities.
 
 # User Preferences
 
