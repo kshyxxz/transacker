@@ -221,9 +221,9 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Rate</Label>
               <Input
                 type="number"
-                step="0.01"
+                step="0.00001"
                 placeholder="0"
-                className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
+                className="bg-dark-gray border-white/20 rounded-xl text-pure-white [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 {...form.register("rate", { valueAsNumber: true })}
               />
             </div>
@@ -232,9 +232,9 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Amount</Label>
               <Input
                 type="number"
-                step="0.01"
+                step="0.00001"
                 placeholder="0"
-                className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
+                className="bg-dark-gray border-white/20 rounded-xl text-pure-white [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 {...form.register("amount", { valueAsNumber: true })}
               />
             </div>
@@ -289,9 +289,9 @@ export default function CreateTransaction() {
               <Label className="text-sm font-medium text-pure-white/80 mb-2 block">Amount</Label>
               <Input
                 type="number"
-                step="0.01"
+                step="0.00001"
                 placeholder="0"
-                className="bg-dark-gray border-white/20 rounded-xl text-pure-white"
+                className="bg-dark-gray border-white/20 rounded-xl text-pure-white [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 {...form.register("amount", { valueAsNumber: true })}
               />
             </div>
