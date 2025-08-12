@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 7%);
+  --foreground: hsl(0, 0%, 100%);
+  --card: hsl(0, 0%, 12%);
+  --card-foreground: hsl(0, 0%, 100%);
+  --popover: hsl(0, 0%, 7%);
+  --popover-foreground: hsl(0, 0%, 100%);
+  --primary: hsl(0, 0%, 100%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(0, 0%, 12%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(0, 0%, 12%);
+  --muted-foreground: hsl(0, 0%, 64%);
+  --accent: hsl(0, 0%, 12%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(0, 0%, 20%);
+  --input: hsl(0, 0%, 12%);
+  --ring: hsl(0, 0%, 20%);
+  --chart-1: hsl(12, 76%, 61%);
+  --chart-2: hsl(173, 58%, 39%);
+  --chart-3: hsl(197, 37%, 24%);
+  --chart-4: hsl(43, 74%, 66%);
+  --chart-5: hsl(27, 87%, 67%);
+  --radius: 0.75rem;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --deep-charcoal: hsl(0, 0%, 7%);
+  --dark-gray: hsl(0, 0%, 12%);
+  --pure-white: hsl(0, 0%, 100%);
+  --success: hsl(142, 76%, 36%);
+  --success-foreground: hsl(0, 0%, 100%);
+}
+
+.dark {
+  --background: hsl(0, 0%, 7%);
+  --foreground: hsl(0, 0%, 100%);
+  --card: hsl(0, 0%, 12%);
+  --card-foreground: hsl(0, 0%, 100%);
+  --popover: hsl(0, 0%, 7%);
+  --popover-foreground: hsl(0, 0%, 100%);
+  --primary: hsl(0, 0%, 100%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(0, 0%, 12%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(0, 0%, 12%);
+  --muted-foreground: hsl(0, 0%, 64%);
+  --accent: hsl(0, 0%, 12%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(0, 0%, 20%);
+  --input: hsl(0, 0%, 12%);
+  --ring: hsl(0, 0%, 20%);
+  --chart-1: hsl(12, 76%, 61%);
+  --chart-2: hsl(173, 58%, 39%);
+  --chart-3: hsl(197, 37%, 24%);
+  --chart-4: hsl(43, 74%, 66%);
+  --chart-5: hsl(27, 87%, 67%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(30, 30, 30, 0.8);
+  }
+  
+  .profit-animation {
+    animation: fadeInScale 0.3s ease-out;
+  }
+  
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .transaction-row:hover {
+    background-color: rgba(42, 42, 42, 0.5);
+    transition: background-color 0.2s ease;
+  }
+}
