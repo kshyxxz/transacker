@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        'deep-charcoal': '#121212',
+                        'dark-gray': '#1E1E1E',
+                        'pure-white': '#FFFFFF',
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #121212;
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(30, 30, 30, 0.8);
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+        
+        .profit-animation {
+            animation: fadeInScale 0.3s ease-out;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .transaction-row:hover {
+            background-color: #2A2A2A;
+            transition: background-color 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-deep-charcoal text-pure-white min-h-screen">
+    <!-- @COMPONENT: MobileApp [main app container] -->
+    <div class="max-w-md mx-auto bg-deep-charcoal min-h-screen relative">
+        
+        <!-- @COMPONENT: CreateTransactionPage [transaction creation interface] -->
+        <div id="createTransactionPage" class="min-h-screen pb-6">
+            <!-- Sticky Header -->
+            <div class="sticky top-0 z-50 glass-effect border-b border-dark-gray px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-xl font-semibold text-pure-white">New Transaction</h1>
+                    <button class="text-pure-white/70 hover:text-pure-white transition-colors" onclick="showHistoryPage()">
+                        <i class="fas fa-history text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transaction Type Toggle -->
+            <!-- @STATE: transactionType:string = "credit" -->
+            <div class="px-6 py-6">
+                <div class="bg-dark-gray rounded-xl p-1 grid grid-cols-2 gap-1">
+                    <button id="creditToggle" class="py-3 px-4 rounded-lg font-medium text-sm transition-all bg-pure-white text-black" onclick="setTransactionType('credit')">
+                        Credit
+                    </button>
+                    <button id="debitToggle" class="py-3 px-4 rounded-lg font-medium text-sm transition-all text-pure-white/70 hover:text-pure-white" onclick="setTransactionType('debit')">
+                        Debit
+                    </button>
+                </div>
+            </div>
+
+            <!-- Credit Form -->
+            <div id="creditForm" class="px-6 space-y-6">
+                <!-- Type Dropdown -->
+                <div>
+                    <label class="block text-sm font-medium text-pure-white/80 mb-2">Type</label>
+                    <select id="creditType" class="w-full bg-dark-gray border border-pure-white/20 rounded-xl px-4 py-3 text-pure-white input-focus transition-all" onchange="updateCreditCalculation()">
+                        <option value="">Select type...</option>
+                        <option value="161" data-display="Weekly">Weekly</option>
+                        <option value="800" data-display="Monthly">Monthly</option>
+                        <option value="80" data-display="115💎">115💎</option>
+                        <option value="160" data-display="240💎">240💎</option>
+                        <option value="240" data-display="355💎">355💎</option>
+                        <option value="320" data-display="480💎">480💎</option>
+                        <option value="405" data-display="610💎">610💎</option>
+                        <option value="485" data-display="725💎">725💎</option>
+                        <option value="565" data-display="850💎">850💎</option>
+                        <option value="645" data-display="965💎">965💎</option>
+                        <option value="725" data-display="1090💎">1090💎</option>
+                        <option value="810" data-display="1240💎">1240💎</option>
+                        <option value="970" data-display="1480💎">1480💎</option>
+                        <option value="1050" data-display="1595💎">1595💎</option>
+                        <option value="1130" data-display="1720💎">1720💎</option>
+                        <option value="1290" data-display="1960💎">1960💎</option>
+                        <option value="1375" data-display="2090💎">2090💎</option>
+                        <option value="1625" data-display="2530💎">2530💎</option>
+                        <option value="3250" data-display="5060💎">5060💎</option>
+                    </select>
+                </div>
+
+                <!-- Rate Input -->
+                <div>
+                    <label class="block text-sm font-medium text-pure-white/80 mb-2">Rate</label>
+                    <input type="number" id="creditRate" placeholder="Enter rate..." class="w-full bg-dark-gray border border-pure-white/20 rounded-xl px-4 py-3 text-pure-white input-focus transition-all" oninput="updateCreditCalculation()">
+                </div>
+
+                <!-- Amount Input -->
+                <div>
+                    <label class="block text-sm font-medium text-pure-white/80 mb-2">Amount</label>
+                    <input type="number" id="creditAmount" placeholder="Enter amount..." class="w-full bg-dark-gray border border-pure-white/20 rounded-xl px-4 py-3 text-pure-white input-focus transition-all" oninput="updateCreditCalculation()">
+                </div>
+
+                <!-- Profit Display -->
+                <div id="profitDisplay" class="hidden">
+                    <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4 profit-animation">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-pure-white/80">Calculated Profit</span>
+                            <span id="profitAmount" class="text-lg font-semibold text-green-400"></span>
+                        </div>
+                        <div class="text-xs text-pure-white/60 mt-1">
+                            Amount - (Rate × Index)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Debit Form -->
+            <div id="debitForm" class="px-6 space-y-6 hidden">
+                <!-- Type Dropdown -->
+                <div>
+                    <label class="block text-sm font-medium text-pure-white/80 mb-2">Type</label>
+                    <select id="debitType" class="w-full bg-dark-gray border border-pure-white/20 rounded-xl px-4 py-3 text-pure-white input-focus transition-all">
+                        <option value="">Select type...</option>
+                        <option value="esewa">eSewa</option>
+                        <option value="bank">Bank</option>
+                    </select>
+                </div>
+
+                <!-- Quantity Input -->
+                <div>
+                    <label class="block text-sm font-medium text-pure-white/80 mb-2">Quantity</label>
+                    <input type="number" id="debitQuantity" placeholder="Enter quantity..." class="w-full bg-dark-gray border border-pure-white/20 rounded-xl px-4 py-3 text-pure-white input-focus transition-all">
+                </div>
+
+                <!-- Amount Input -->
+                <div>
+                    <label class="block text-sm font-medium text-pure-white/80 mb-2">Amount</label>
+                    <input type="number" id="debitAmount" placeholder="Enter amount..." class="w-full bg-dark-gray border border-pure-white/20 rounded-xl px-4 py-3 text-pure-white input-focus transition-all">
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="px-6 pt-8">
+                <button class="w-full bg-pure-white text-black font-semibold py-4 rounded-xl hover:bg-pure-white/90 transition-all active:scale-98 shadow-lg" onclick="saveTransaction()">
+                    <i class="fas fa-save mr-2"></i>
+                    Save Transaction
+                </button>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: CreateTransactionPage -->
+
+        <!-- @COMPONENT: TransactionHistoryPage [transaction listing interface] -->
+        <div id="transactionHistoryPage" class="min-h-screen hidden">
+            <!-- Sticky Header -->
+            <div class="sticky top-0 z-50 glass-effect border-b border-dark-gray px-6 py-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <button onclick="showCreatePage()" class="text-pure-white/70 hover:text-pure-white transition-colors">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-pure-white">Transaction History</h1>
+                    </div>
+                    <button class="text-pure-white/70 hover:text-pure-white transition-colors">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+                </div>
+                
+                <!-- Date Filter -->
+                <div class="flex space-x-2">
+                    <input type="date" class="flex-1 bg-dark-gray border border-pure-white/20 rounded-lg px-3 py-2 text-sm text-pure-white input-focus">
+                    <button class="bg-dark-gray border border-pure-white/20 rounded-lg px-4 py-2 text-sm text-pure-white/70 hover:text-pure-white transition-colors">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transaction List -->
+            <div class="px-6 py-4">
+                <div class="space-y-2">
+                    <!-- @MAP: transactions.map(transaction => ( -->
+                    
+                    <!-- Credit Transaction Example -->
+                    <div class="transaction-row bg-dark-gray/50 rounded-xl p-4 border border-pure-white/10" data-mock="true">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-xs font-medium px-2 py-1 bg-green-500/20 text-green-400 rounded-full">CREDIT</span>
+                                    <span class="text-sm font-medium text-pure-white" data-bind="transaction.type">240💎</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-pure-white/60" data-bind="transaction.timestamp">Today, 2:30 PM</span>
+                                    <div class="text-right">
+                                        <div class="text-lg font-semibold text-pure-white" data-bind="transaction.amount">₹2,400</div>
+                                        <div class="text-xs text-green-400" data-bind="transaction.profit">+₹400 profit</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Debit Transaction Example -->
+                    <div class="transaction-row bg-dark-gray/30 rounded-xl p-4 border border-pure-white/10" data-mock="true">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-xs font-medium px-2 py-1 bg-red-500/20 text-red-400 rounded-full">DEBIT</span>
+                                    <span class="text-sm font-medium text-pure-white" data-bind="transaction.type">eSewa</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-pure-white/60" data-bind="transaction.timestamp">Yesterday, 5:15 PM</span>
+                                    <div class="text-right">
+                                        <div class="text-lg font-semibold text-pure-white" data-bind="transaction.amount">₹1,200</div>
+                                        <div class="text-xs text-pure-white/40" data-bind="transaction.quantity">Qty: 300</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Transaction Example -->
+                    <div class="transaction-row bg-dark-gray/50 rounded-xl p-4 border border-pure-white/10" data-mock="true">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-xs font-medium px-2 py-1 bg-green-500/20 text-green-400 rounded-full">CREDIT</span>
+                                    <span class="text-sm font-medium text-pure-white" data-bind="transaction.type">Weekly</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-pure-white/60" data-bind="transaction.timestamp">2 days ago, 10:45 AM</span>
+                                    <div class="text-right">
+                                        <div class="text-lg font-semibold text-pure-white" data-bind="transaction.amount">₹1,800</div>
+                                        <div class="text-xs text-green-400" data-bind="transaction.profit">+₹317 profit</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Debit Transaction Example -->
+                    <div class="transaction-row bg-dark-gray/30 rounded-xl p-4 border border-pure-white/10" data-mock="true">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-xs font-medium px-2 py-1 bg-red-500/20 text-red-400 rounded-full">DEBIT</span>
+                                    <span class="text-sm font-medium text-pure-white" data-bind="transaction.type">Bank</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-pure-white/60" data-bind="transaction.timestamp">3 days ago, 3:20 PM</span>
+                                    <div class="text-right">
+                                        <div class="text-lg font-semibold text-pure-white" data-bind="transaction.amount">₹5,000</div>
+                                        <div class="text-xs text-pure-white/40" data-bind="transaction.quantity">Qty: 1500</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Transaction Example -->
+                    <div class="transaction-row bg-dark-gray/50 rounded-xl p-4 border border-pure-white/10" data-mock="true">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-xs font-medium px-2 py-1 bg-green-500/20 text-green-400 rounded-full">CREDIT</span>
+                                    <span class="text-sm font-medium text-pure-white" data-bind="transaction.type">1240💎</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-pure-white/60" data-bind="transaction.timestamp">1 week ago, 7:30 PM</span>
+                                    <div class="text-right">
+                                        <div class="text-lg font-semibold text-pure-white" data-bind="transaction.amount">₹8,500</div>
+                                        <div class="text-xs text-green-400" data-bind="transaction.profit">+₹990 profit</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="px-6 py-4">
+                <div class="bg-dark-gray/50 rounded-xl p-4 border border-pure-white/10">
+                    <h3 class="text-sm font-medium text-pure-white/80 mb-3">This Month</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-xs text-pure-white/60">Total Profit</div>
+                            <div class="text-lg font-semibold text-green-400" data-bind="monthlyStats.totalProfit">₹1,707</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-pure-white/60">Transactions</div>
+                            <div class="text-lg font-semibold text-pure-white" data-bind="monthlyStats.transactionCount">5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: TransactionHistoryPage -->
+
+        <!-- Floating Action Button -->
+        <button id="fabButton" class="fixed bottom-6 right-6 bg-pure-white text-black w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center" onclick="showCreatePage()">
+            <i class="fas fa-plus text-lg"></i>
+        </button>
+    </div>
+    <!-- @END_COMPONENT: MobileApp -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        (function() {
+            'use strict';
+            
+            let currentPage = 'create';
+            let transactionType = 'credit';
+            
+            // Navigation functions
+            window.showCreatePage = function() {
+                document.getElementById('createTransactionPage').classList.remove('hidden');
+                document.getElementById('transactionHistoryPage').classList.add('hidden');
+                document.getElementById('fabButton').classList.add('hidden');
+                currentPage = 'create';
+            };
+            
+            window.showHistoryPage = function() {
+                document.getElementById('createTransactionPage').classList.add('hidden');
+                document.getElementById('transactionHistoryPage').classList.remove('hidden');
+                document.getElementById('fabButton').classList.remove('hidden');
+                currentPage = 'history';
+            };
+            
+            // Transaction type toggle
+            window.setTransactionType = function(type) {
+                transactionType = type;
+                
+                const creditToggle = document.getElementById('creditToggle');
+                const debitToggle = document.getElementById('debitToggle');
+                const creditForm = document.getElementById('creditForm');
+                const debitForm = document.getElementById('debitForm');
+                
+                if (type === 'credit') {
+                    creditToggle.className = 'py-3 px-4 rounded-lg font-medium text-sm transition-all bg-pure-white text-black';
+                    debitToggle.className = 'py-3 px-4 rounded-lg font-medium text-sm transition-all text-pure-white/70 hover:text-pure-white';
+                    creditForm.classList.remove('hidden');
+                    debitForm.classList.add('hidden');
+                } else {
+                    debitToggle.className = 'py-3 px-4 rounded-lg font-medium text-sm transition-all bg-pure-white text-black';
+                    creditToggle.className = 'py-3 px-4 rounded-lg font-medium text-sm transition-all text-pure-white/70 hover:text-pure-white';
+                    debitForm.classList.remove('hidden');
+                    creditForm.classList.add('hidden');
+                }
+            };
+            
+            // Credit calculation
+            window.updateCreditCalculation = function() {
+                const typeSelect = document.getElementById('creditType');
+                const rateInput = document.getElementById('creditRate');
+                const amountInput = document.getElementById('creditAmount');
+                const profitDisplay = document.getElementById('profitDisplay');
+                const profitAmount = document.getElementById('profitAmount');
+                
+                const index = parseFloat(typeSelect.value) || 0;
+                const rate = parseFloat(rateInput.value) || 0;
+                const amount = parseFloat(amountInput.value) || 0;
+                
+                if (index && rate && amount) {
+                    const profit = amount - (rate * index);
+                    profitAmount.textContent = `₹${profit.toLocaleString()}`;
+                    profitDisplay.classList.remove('hidden');
+                    
+                    // Add animation
+                    profitDisplay.classList.remove('profit-animation');
+                    void profitDisplay.offsetWidth; // Trigger reflow
+                    profitDisplay.classList.add('profit-animation');
+                } else {
+                    profitDisplay.classList.add('hidden');
+                }
+            };
+            
+            // Save transaction
+            window.saveTransaction = function() {
+                // TODO: Implement actual save logic with API call
+                const transactionData = {};
+                
+                if (transactionType === 'credit') {
+                    const type = document.getElementById('creditType');
+                    const rate = document.getElementById('creditRate').value;
+                    const amount = document.getElementById('creditAmount').value;
+                    
+                    transactionData.type = 'credit';
+                    transactionData.subType = type.options[type.selectedIndex]?.dataset.display;
+                    transactionData.index = parseFloat(type.value);
+                    transactionData.rate = parseFloat(rate);
+                    transactionData.amount = parseFloat(amount);
+                    transactionData.profit = amount - (rate * transactionData.index);
+                } else {
+                    transactionData.type = 'debit';
+                    transactionData.subType = document.getElementById('debitType').value;
+                    transactionData.quantity = parseFloat(document.getElementById('debitQuantity').value);
+                    transactionData.amount = parseFloat(document.getElementById('debitAmount').value);
+                }
+                
+                console.log('Saving transaction:', transactionData);
+                
+                // Show success feedback
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-2"></i>Saved!';
+                button.classList.add('bg-green-500', 'text-white');
+                button.classList.remove('bg-pure-white', 'text-black');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('bg-green-500', 'text-white');
+                    button.classList.add('bg-pure-white', 'text-black');
+                    
+                    // Clear form
+                    if (transactionType === 'credit') {
+                        document.getElementById('creditType').value = '';
+                        document.getElementById('creditRate').value = '';
+                        document.getElementById('creditAmount').value = '';
+                        document.getElementById('profitDisplay').classList.add('hidden');
+                    } else {
+                        document.getElementById('debitType').value = '';
+                        document.getElementById('debitQuantity').value = '';
+                        document.getElementById('debitAmount').value = '';
+                    }
+                }, 1500);
+            };
+            
+            // Initialize app
+            showCreatePage();
+        })();
+    </script>
+</body>
+</html>
